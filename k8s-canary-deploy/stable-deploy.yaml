@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-stable
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: node
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: node
+        track: stable
+    spec:
+      containers:
+      - name: node
+        image: kalianonymous/node-devops:v1
+        ports:
+        - containerPort: 3000

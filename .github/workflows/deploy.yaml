@@ -1,0 +1,32 @@
+name: Deploy Canary
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: actions/checkout@v3
+
+      - name: Build docker image
+        run: docker build -t kalianonymous/node:${{ github.sha }} .
+
+      - name: Push docker image
+        run: docker push kalianonymous/node:${{ github.sha }}
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+
+      - name: Deploy Canary
+        run: |
+          helm upgrade --install node-canary ./node-app \
+          --set image.tag=${{ github.sha }} \
+          --set replicaCount=1
+      
